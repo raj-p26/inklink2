@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">InkLink</string>
+
+    <!--  navigation drawer strings  -->
+    <string name="nav_str_menu_home">Home</string>
+    <string name="nav_str_menu_articles">Articles</string>
+    <string name="nav_str_menu_users">Users</string>
+    <string name="open_nav_str">Open Navigation Drawer</string>
+    <string name="close_nav_str">Close Navigation Drawer</string>
+
+    <!--  nav drawer header strings  -->
+    <string name="header_str_username">Guest</string>
+    <string name="header_str_email">guest@inklink.com</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
