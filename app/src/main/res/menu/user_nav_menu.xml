@@ -2,9 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-    <group
-        android:checkableBehavior="single"
-        >
+    <group android:id="@+id/nav_simple_tasks_group"
+        android:checkableBehavior="single">
         <item android:id="@+id/nav_home"
             android:checked="true"
             android:title="@string/nav_str_menu_home"
@@ -16,5 +15,8 @@
             android:title="@string/nav_str_menu_users"
             android:icon="@drawable/ic_users" />
     </group>
+
+    <group android:id="@+id/nav_user_group"
+        android:checkableBehavior="single" />
 
 </menu>

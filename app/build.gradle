@@ -8,6 +8,7 @@ android {
     defaultConfig {
         applicationId "com.example.inklink"
         minSdkVersion 21
+        //noinspection OldTargetApi
         targetSdkVersion 32
         versionCode 1
         versionName "1.0"
@@ -25,16 +26,28 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    //noinspection GradleDependency
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    //noinspection GradleDependency
     implementation 'androidx.core:core-ktx:1.1.0'
+    //noinspection GradleDependency
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    //noinspection GradleDependency
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    //noinspection GradleDependency
     testImplementation 'junit:junit:4.12'
+    //noinspection GradleDependency
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    //noinspection GradleDependency
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    //noinspection GradleDependency
     implementation 'androidx.recyclerview:recyclerview:1.2.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    //noinspection GradleDependency
     implementation 'com.google.android.material:material:1.0.0'
+    //noinspection GradleDependency
     implementation "com.android.volley:volley:1.1.1"
+    //noinspection GradleDependency
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
 }

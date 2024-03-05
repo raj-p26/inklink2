@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="logIn_opt_int">101</integer>
+    <integer name="signUp_opt_int">102</integer>
+
+    <integer name="my_articles_opt_int">103</integer>
+    <integer name="profile_opt_int">104</integer>
+    <integer name="logout_opt_int">105</integer>
+</resources>
