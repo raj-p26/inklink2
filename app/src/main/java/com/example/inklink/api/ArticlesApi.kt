@@ -5,7 +5,6 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.inklink.models.Article
-import com.example.inklink.models.User
 import org.json.JSONObject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -54,5 +53,37 @@ class ArticlesApi(context: Context) {
         }
 
         return articles
+    }
+
+    suspend fun newArticle(article: Article): JSONObject {
+        if (article.userId == null) {
+            return (JSONObject().apply {
+                put("status", "failed")
+                put("message", "How the hell are you able to create an article?")
+            })
+        }
+        val jsonObject = JSONObject()
+        jsonObject.put("title", article.title)
+        jsonObject.put("content", article.content)
+        jsonObject.put("status", article.status)
+        jsonObject.put("user_id", article.userId)
+
+        return suspendCoroutine { continuation ->
+            val request =
+                JsonObjectRequest(Request.Method.POST, "$URL/articles/new", jsonObject, {
+                    continuation.resume(it)
+                }, {
+                    val errObject = if (it.networkResponse != null && it.networkResponse.data != null)
+                        JSONObject(String(it.networkResponse.data))
+                    else
+                        JSONObject()
+                            .put("status", "failed")
+                            .put("message", "Could not connect to the server")
+
+                    continuation.resume(errObject)
+                })
+
+            requestQueue.add(request)
+        }
     }
 }

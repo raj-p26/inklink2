@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group>
-        <item android:title="@string/opt_publish_str" />
-        <item android:title="@string/opt_save_as_draft_str" />
-        <item android:title="@string/opt_discard_str" />
+        <item
+            android:id="@+id/create_article_publish"
+            android:title="@string/opt_publish_str" />
+        <item
+            android:id="@+id/create_article_draft"
+            android:title="@string/opt_save_as_draft_str" />
+        <item
+            android:id="@+id/create_article_discard"
+            android:title="@string/opt_discard_str" />
     </group>
 </menu>

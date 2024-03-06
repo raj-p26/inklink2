@@ -42,6 +42,7 @@
         app:layout_constraintTop_toBottomOf="@+id/new_article_title">
 
         <EditText
+            android:id="@+id/new_article_content"
             android:background="#FFF"
             android:inputType="textMultiLine"
             android:hint="@string/test_description"
