@@ -43,7 +43,7 @@ class RegisterActivity : AppCompatActivity() {
             )
             val helper = UsersApi(this)
             GlobalScope.launch(Dispatchers.Main) {
-                val (responseUser, err) = helper.registerUser(user)
+                val (responseUser, err, token) = helper.registerUser(user)
 
                 if (err != null && responseUser == null) {
                     showDialog(err.getString("message"))
@@ -54,8 +54,8 @@ class RegisterActivity : AppCompatActivity() {
                 val editor = prefs.edit()
                 editor.putString("userId", user.id)
                 editor.putString("email", user.email)
-                editor.putString("firstName", user.firstName)
-                editor.putString("lastName", user.lastName)
+                editor.putString("username", user.userName)
+                editor.putString("userToken", token)
 
                 editor.apply()
                 setResult(Activity.RESULT_OK)

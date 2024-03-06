@@ -4,12 +4,13 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
-//import android.view.View
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -20,20 +21,29 @@ import com.google.android.material.navigation.NavigationView
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
-//    private late init var headerView: View
-     private lateinit var menu: Menu
+    private lateinit var headerView: View
+    private lateinit var menu: Menu
+    private lateinit var headerUsername: TextView
+    private lateinit var headerEmail: TextView
+    private lateinit var prefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        val toolbar: Toolbar = findViewById(R.id.mainActivity_toolbar)
         setSupportActionBar(toolbar)
 
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.navigation_view)
         navigationView.setNavigationItemSelectedListener(this)
+        headerView = navigationView.getHeaderView(0)
+        headerUsername = headerView.findViewById(R.id.nav_header_user_name)
+        headerEmail = headerView.findViewById(R.id.nav_header_user_email)
+
         menu = navigationView.menu
+
+        prefs = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar,
@@ -44,6 +54,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         updateNavigationMenu()
+        updateHeader()
 
         if (savedInstanceState == null) {
             supportFragmentManager
@@ -111,11 +122,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         navigationView.setCheckedItem(R.id.nav_home)
 
-        if (data != null) {
-            intent = data
-            Log.d("intent-dbg", "${intent.getStringExtra("email")}")
-            Log.d("intent-dbg", "${intent.getStringExtra("password")}")
-        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -132,7 +138,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (!prefs.contains("userId")) {
             menu
                 .add(R.id.nav_user_group, R.integer.logIn_opt_int, 1, "Login")
-                .setIcon(R.drawable.ic_logout)
+                .setIcon(R.drawable.ic_login)
             menu
                 .add(R.id.nav_user_group, R.integer.signUp_opt_int, 2, "Sign Up")
                 .setIcon(R.drawable.ic_sign_up)
@@ -149,5 +155,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         menu.setGroupCheckable(R.id.nav_user_group, true, false)
+    }
+
+    private fun updateHeader() {
+        headerUsername.text = prefs.getString("username", "Guest")
+        headerEmail.text = prefs.getString("email", "guest@inklink.com")
     }
 }

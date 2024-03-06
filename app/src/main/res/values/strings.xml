@@ -27,4 +27,18 @@
     <string name="register_email_hint_str">Email</string>
     <string name="register_password_hint_str">Password</string>
     <string name="register_cPassword_hint_str">Confirm Password</string>
+
+    <!--  test strings  -->
+    <string name="test_username">Test</string>
+    <string name="test_email">test@gmail.com</string>
+    <string name="test_title">Test Article</string>
+    <string name="test_description">Analysts See Slower Bitcoin Hashrate Growth in 2022 Amid Market Correction </string>
+
+    <!--  create article title  -->
+    <string name="create_article_str">Create a new Article</string>
+
+    <!--  create article option menu strings  -->
+    <string name="opt_publish_str">Publish</string>
+    <string name="opt_save_as_draft_str">Save as Draft</string>
+    <string name="opt_discard_str">Discard Changes</string>
 </resources>

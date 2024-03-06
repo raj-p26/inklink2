@@ -3,10 +3,8 @@ package com.example.inklink
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.util.Patterns
@@ -32,12 +30,12 @@ class LoginActivity : AppCompatActivity() {
 
             GlobalScope.launch(Dispatchers.Main) {
                 val handler = UsersApi(applicationContext)
-                val (user, err) = handler.getUserByCredentials(
+                val (user, err, token) = handler.getUserByCredentials(
                     emailEditText.text.toString(),
                     passwordEditText.text.toString()
                 )
 
-                if (err != null && user == null) {
+                if (err != null) {
                     showDialog(err.getString("message"))
                     return@launch
                 }
@@ -46,8 +44,8 @@ class LoginActivity : AppCompatActivity() {
                 val editor = prefs.edit()
                 editor.putString("userId", user!!.id)
                 editor.putString("email", user.email)
-                editor.putString("firstName", user.firstName)
-                editor.putString("lastName", user.lastName)
+                editor.putString("username", user.userName)
+                editor.putString("userToken", token!!)
 
                 editor.apply()
                 setResult(Activity.RESULT_OK)
