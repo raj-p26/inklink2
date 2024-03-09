@@ -1,10 +1,9 @@
 package com.example.inklink
 
-import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
@@ -44,11 +43,37 @@ class CreateArticleActivity : AppCompatActivity() {
             R.id.create_article_draft -> createArticle("draft")
             R.id.create_article_publish -> createArticle("published")
             R.id.create_article_discard -> {
-                Log.d("TODO", "TODO discard")
+                if (articleTitle.text.toString().isNotBlank() || articleContent.text.toString().isNotBlank()) {
+                    AlertDialog.Builder(this@CreateArticleActivity).apply {
+                        setTitle("Discard?")
+                        setMessage("Are you sure you want to discard changes?")
+                        setPositiveButton("Yes") { _, _ ->
+                            intent = Intent(this@CreateArticleActivity, MainActivity::class.java)
+                            this@CreateArticleActivity.startActivity(intent)
+                            this@CreateArticleActivity.finish()
+                        }
+                        setNegativeButton("No", null)
+
+                        create()
+                        show()
+                    }
+                } else {
+                    intent = Intent(this@CreateArticleActivity, MainActivity::class.java)
+                    this@CreateArticleActivity.startActivity(intent)
+                    this@CreateArticleActivity.finish()
+                }
             }
         }
 
         return true
+    }
+
+    override fun onBackPressed() {
+        intent = Intent(this@CreateArticleActivity, MainActivity::class.java)
+        this@CreateArticleActivity.startActivity(intent)
+        this@CreateArticleActivity.finish()
+
+        super.onBackPressed()
     }
 
     private fun createArticle(status: String) {
@@ -63,10 +88,7 @@ class CreateArticleActivity : AppCompatActivity() {
             val result = helper.newArticle(article)
 
             showDialogBox(result.getString("status"), result.getString("message"))
-            if (result.getString("status") != "failed")
-                setResult(Activity.RESULT_OK)
-            finish()
-            }
+        }
     }
 
     private fun showDialogBox(status: String, message: String) {
@@ -74,7 +96,9 @@ class CreateArticleActivity : AppCompatActivity() {
             setTitle(status)
             setMessage(message)
             setCancelable(false)
-            setNeutralButton("Ok") { _, _ ->
+            setPositiveButton("Ok") { _, _ ->
+                intent = Intent(this@CreateArticleActivity, MainActivity::class.java)
+                this@CreateArticleActivity.startActivity(intent)
                 this@CreateArticleActivity.finish()
             }
 

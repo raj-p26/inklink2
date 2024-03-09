@@ -13,7 +13,7 @@ class ArticlesApi(context: Context) {
     private val requestQueue = Volley.newRequestQueue(context)
 
     companion object {
-        const val URL = "http://192.168.113.215:4000"
+        const val URL = "http://192.168.185.216:4000"
     }
 
     suspend fun getAllArticles(type: String): Pair<ArrayList<Article>?, JSONObject?> {
@@ -42,6 +42,7 @@ class ArticlesApi(context: Context) {
             val article = Article(
                 id = obj.getString("id"),
                 authorName = obj.getString("author"),
+                userId = obj.getString("user_id"),
                 title = obj.getString("title"),
                 content = obj.getString("content"),
                 reportCount = obj.getInt("report_count"),
@@ -81,6 +82,27 @@ class ArticlesApi(context: Context) {
                             .put("message", "Could not connect to the server")
 
                     continuation.resume(errObject)
+                })
+
+            requestQueue.add(request)
+        }
+    }
+
+    suspend fun getArticlesOf(userId: String, type: String): Pair<ArrayList<Article>?, JSONObject?> {
+        return suspendCoroutine { continuation ->
+            val request =
+                JsonObjectRequest(Request.Method.GET, "$URL/articles/$userId/$type", null, {
+                    val articles = extractArticles(it)
+                    continuation.resume(Pair(articles, null))
+                }, {
+                    val errObject = if (it.networkResponse != null && it.networkResponse.data != null)
+                        JSONObject(String(it.networkResponse.data))
+                    else
+                        JSONObject()
+                            .put("status", "failed")
+                            .put("message", "Could not connect to the server")
+
+                    continuation.resume(Pair(null, errObject))
                 })
 
             requestQueue.add(request)

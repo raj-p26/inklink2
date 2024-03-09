@@ -43,19 +43,19 @@ class RegisterActivity : AppCompatActivity() {
             )
             val helper = UsersApi(this)
             GlobalScope.launch(Dispatchers.Main) {
-                val (responseUser, err, token) = helper.registerUser(user)
+                val (responseUser, err) = helper.registerUser(user)
 
-                if (err != null && responseUser == null) {
+                if (err != null) {
                     showDialog(err.getString("message"))
                     return@launch
                 }
 
                 val prefs = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                 val editor = prefs.edit()
-                editor.putString("userId", user.id)
-                editor.putString("email", user.email)
-                editor.putString("username", user.userName)
-                editor.putString("userToken", token)
+                editor.putString("userId", responseUser!!.id)
+                editor.putString("email", responseUser.email)
+                editor.putString("username", responseUser.userName)
+                editor.putString("lastLoginDate", responseUser.lastLoginDate)
 
                 editor.apply()
                 setResult(Activity.RESULT_OK)

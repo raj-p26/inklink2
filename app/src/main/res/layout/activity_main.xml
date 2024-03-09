@@ -15,12 +15,17 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
+            android:elevation="4dp"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:id="@+id/mainActivity_toolbar"
             android:background="@color/colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:background="@drawable/toolbar_shadow"/>
 
         <FrameLayout
             android:layout_width="match_parent"

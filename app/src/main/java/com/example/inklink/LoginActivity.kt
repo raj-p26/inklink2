@@ -30,7 +30,7 @@ class LoginActivity : AppCompatActivity() {
 
             GlobalScope.launch(Dispatchers.Main) {
                 val handler = UsersApi(applicationContext)
-                val (user, err, token) = handler.getUserByCredentials(
+                val (user, err) = handler.getUserByCredentials(
                     emailEditText.text.toString(),
                     passwordEditText.text.toString()
                 )
@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
                 editor.putString("userId", user!!.id)
                 editor.putString("email", user.email)
                 editor.putString("username", user.userName)
-                editor.putString("userToken", token!!)
+                editor.putString("lastLoginDate", user.lastLoginDate)
 
                 editor.apply()
                 setResult(Activity.RESULT_OK)

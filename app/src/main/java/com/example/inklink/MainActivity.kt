@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var menu: Menu
     private lateinit var headerUsername: TextView
     private lateinit var headerEmail: TextView
+    private lateinit var headerLastLoginTime: TextView
     private lateinit var prefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         headerView = navigationView.getHeaderView(0)
         headerUsername = headerView.findViewById(R.id.nav_header_user_name)
         headerEmail = headerView.findViewById(R.id.nav_header_user_email)
+        headerLastLoginTime = headerView.findViewById(R.id.header_last_login_time)
 
         menu = navigationView.menu
 
@@ -67,17 +69,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_home -> {
-                replaceFragment(HomeFragment())
-            }
+            R.id.nav_home -> replaceFragment(HomeFragment())
 
-            R.id.nav_articles -> {
-                replaceFragment(ArticlesFragment())
-            }
+            R.id.nav_articles -> replaceFragment(ArticlesFragment())
 
-            R.id.nav_users -> {
-                replaceFragment(UsersFragment())
-            }
+            R.id.nav_users -> replaceFragment(UsersFragment())
+
+            R.integer.my_articles_opt_int -> replaceFragment(MyArticlesFragment())
+
+            R.integer.profile_opt_int -> replaceFragment(UpdateProfileFragment())
 
             R.integer.logIn_opt_int -> {
                 intent = Intent(this, LoginActivity::class.java)
@@ -98,7 +98,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         prefs.edit()
                             .clear()
                             .apply()
-                        this@MainActivity.recreate()
+                        intent = Intent(this@MainActivity, this@MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
                     }
 
                     setNegativeButton("No", null)
@@ -160,5 +162,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun updateHeader() {
         headerUsername.text = prefs.getString("username", "Guest")
         headerEmail.text = prefs.getString("email", "guest@inklink.com")
+
+        if (prefs.contains("userId")) {
+            val text = String.format(
+                resources.getString(R.string.header_str_last_login_time),
+                prefs.getString("lastLoginDate", null)
+            )
+            headerLastLoginTime.text = text
+        } else {
+            headerLastLoginTime.visibility = View.GONE
+        }
     }
 }

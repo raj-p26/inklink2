@@ -1,7 +1,6 @@
 package com.example.inklink
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -13,47 +12,34 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.inklink.adapter.ArticlesAdapter
 import com.example.inklink.api.ArticlesApi
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class HomeFragment : Fragment() {
-    private lateinit var floatingActionButton: FloatingActionButton
+class MyArticlesFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var prefs: SharedPreferences
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
-        floatingActionButton = view.findViewById(R.id.new_article_btn)
-        recyclerView = view.findViewById(R.id.home_recycler_view)
-        prefs = requireActivity().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-
-        if (!prefs.contains("userId"))
-            floatingActionButton.hide()
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.fragment_my_articles, container, false)
+        recyclerView = view.findViewById(R.id.my_articles_recyclerView)
+        prefs = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
         GlobalScope.launch(Dispatchers.Main) {
-            val helper = ArticlesApi(requireActivity())
-            val (articles, err) = helper.getAllArticles("latest")
+            val userId = prefs.getString("userId", "nil")
+            val helper = ArticlesApi(requireContext())
+            val (articles, err) = helper.getArticlesOf(userId!!, "all")
 
-            if (err != null && articles == null) {
+            if (err != null) {
                 showDialog(err.getString("message"))
-                return@launch
             }
 
             recyclerView.adapter = ArticlesAdapter(requireActivity(), articles!!)
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        }
-
-        floatingActionButton.setOnClickListener {
-            val intent = Intent(requireContext(), CreateArticleActivity::class.java)
-
-            startActivity(intent)
-            requireActivity().finish()
         }
 
         return view

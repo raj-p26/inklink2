@@ -16,7 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:ignore="AllowBackup, UnusedAttribute">
-        <activity android:name=".CreateArticleActivity"
+        <activity android:name=".ViewUserActivity" />
+        <activity android:name=".ViewArticleActivity" />
+        <activity
+            android:name=".CreateArticleActivity"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity" />

@@ -24,4 +24,10 @@
         android:textSize='20sp'
         android:textColor='#fff'/>
 
+    <TextView
+        android:id="@+id/header_last_login_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/header_str_last_login_time"/>
+
 </LinearLayout>

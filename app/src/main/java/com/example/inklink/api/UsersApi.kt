@@ -1,6 +1,7 @@
 package com.example.inklink.api
 
 import android.content.Context
+import android.util.Log
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
@@ -14,7 +15,7 @@ class UsersApi(context: Context) {
     private var requestQueue: RequestQueue = Volley.newRequestQueue(context)
 
     companion object {
-        const val URL = "http://192.168.113.215:4000"
+        const val URL = "http://192.168.185.216:4000"
     }
 
     suspend fun getAllUsers(): Pair<ArrayList<User>?, JSONObject?> {
@@ -42,7 +43,8 @@ class UsersApi(context: Context) {
             val user = User(
                 id = obj.getString("id"),
                 userName = obj.getString("username"),
-                email = obj.getString("email")
+                email = obj.getString("email"),
+                lastLoginDate = obj.getString("last_login_date")
             )
 
             users.add(user)
@@ -51,7 +53,7 @@ class UsersApi(context: Context) {
         return users
     }
 
-    suspend fun registerUser(user: User): Triple<User?, JSONObject?, String?> {
+    suspend fun registerUser(user: User): Pair<User?, JSONObject?> {
         val jsonObject = JSONObject()
         jsonObject.put("first_name", user.firstName)
         jsonObject.put("last_name", user.lastName)
@@ -63,26 +65,25 @@ class UsersApi(context: Context) {
             val request =
                 JsonObjectRequest(Request.Method.POST, "$URL/users/signup", jsonObject, {
                     val responseUser = it.getJSONObject("user")
-                    val token = it.getString("token")
 
-                    user.firstName = responseUser.getString("first_name")
-                    user.lastName = responseUser.getString("last_name")
+                    user.userName = responseUser.getString("username")
                     user.email = responseUser.getString("email")
                     user.id = responseUser.getString("id")
-                    continuation.resume(Triple(user, null, token))
+                    user.lastLoginDate = responseUser.getString("last_login_date")
+                    continuation.resume(Pair(user, null))
                 }, {
                     val errObject = if (it.networkResponse != null && it.networkResponse.data != null)
                         JSONObject(String(it.networkResponse.data))
                     else
                         JSONObject().put("message", "Could not connect to the server")
 
-                    continuation.resume(Triple(null, errObject, null))
+                    continuation.resume(Pair(null, errObject))
                 })
             requestQueue.add(request)
         }
     }
 
-    suspend fun getUserByCredentials(email: String, password: String): Triple<User?, JSONObject?, String?> {
+    suspend fun getUserByCredentials(email: String, password: String): Pair<User?, JSONObject?> {
         val jsonObject = JSONObject().apply {
             put("email", email)
             put("password", password)
@@ -91,21 +92,79 @@ class UsersApi(context: Context) {
             val request =
                 JsonObjectRequest(Request.Method.POST, "$URL/users/login", jsonObject, {
                     val response = it.getJSONObject("user")
-                    val token = it.getString("token")
                     val user = User(
                         id = response.getString("id"),
                         userName = response.getString("username"),
-                        email = response.getString("email")
+                        email = response.getString("email"),
+                        lastLoginDate = response.getString("last_login_date")
                     )
-                    continuation.resume(Triple(user, null, token))
+                    continuation.resume(Pair(user, null))
                 }, {
                     val errObject = if (it.networkResponse != null && it.networkResponse.data != null)
                         JSONObject(String(it.networkResponse.data))
                     else
                         JSONObject().put("message", "Could not connect to the server")
-                    continuation.resume(Triple(null, errObject, null))
+                    continuation.resume(Pair(null, errObject))
                 })
             requestQueue.add(request)
         }
+    }
+
+    suspend fun getUserById(id: String?): Pair<User?, JSONObject?> {
+        if (id == null) {
+            val errObject = JSONObject()
+            errObject.put("status", "failed")
+            errObject.put("message", "ID is null, How?")
+
+            return Pair(null, errObject)
+        }
+
+        return suspendCoroutine { continuation ->
+            val request =
+                JsonObjectRequest(Request.Method.GET, "$URL/users/$id", null, {
+                    val user = getUserFromJson(it.getJSONObject("user"))
+                    continuation.resume(Pair(user, null))
+                }, {
+                    val errObject = if (it.networkResponse != null && it.networkResponse.data != null)
+                        JSONObject(String(it.networkResponse.data))
+                    else
+                        JSONObject().put("message", "Could not connect to the server")
+                    continuation.resume(Pair(null, errObject))
+                })
+
+            requestQueue.add(request)
+        }
+    }
+
+    suspend fun updateUser(jsonObject: JSONObject): Pair<Boolean, JSONObject> {
+        return suspendCoroutine { continuation ->
+            val request =
+                JsonObjectRequest(Request.Method.PUT, "$URL/users/update", jsonObject, {
+                    continuation.resume(Pair(true, it))
+                }, {
+                    val errObject = if (it.networkResponse != null && it.networkResponse.data != null)
+                        JSONObject(String(it.networkResponse.data))
+                    else
+                        JSONObject().put("message", "Could not connect to the server")
+                    continuation.resume(Pair(false, errObject))
+                })
+
+            requestQueue.add(request)
+        }
+    }
+
+    private fun getUserFromJson(jsonObject: JSONObject): User {
+        val user = User()
+        user.id = jsonObject.getString("id")
+        user.firstName = jsonObject.getString("first_name")
+        user.lastName = jsonObject.getString("last_name")
+        user.userName = jsonObject.getString("username")
+        user.email = jsonObject.getString("email")
+        user.about = jsonObject.getString("about")
+        user.registrationDate = jsonObject.getString("registration_date")
+        user.lastLoginDate = jsonObject.getString("last_login_date")
+        Log.d("user-dbg", user.toString())
+
+        return user
     }
 }

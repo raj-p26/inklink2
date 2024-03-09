@@ -11,7 +11,7 @@
     <!--  nav drawer header strings  -->
     <string name="header_str_username">Guest</string>
     <string name="header_str_email">guest@inklink.com</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="header_str_last_login_time">Last Logged in: %1$s</string>
 
     <!--  login activity strings  -->
     <string name="login_str">Login</string>
@@ -41,4 +41,13 @@
     <string name="opt_publish_str">Publish</string>
     <string name="opt_save_as_draft_str">Save as Draft</string>
     <string name="opt_discard_str">Discard Changes</string>
+
+    <!--  Update profile fragment strings  -->
+    <string name="update_str">Update Profile</string>
+    <string name="update_firstName">First Name</string>
+    <string name="update_lastName">Last Name</string>
+    <string name="update_username">Username</string>
+    <string name="update_email">Email</string>
+    <string name="update_password">Password</string>
+    <string name="update_about">About</string>
 </resources>
