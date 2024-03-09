@@ -35,6 +35,9 @@ class RegisterActivity : AppCompatActivity() {
         registerButton.setOnClickListener {
             if (!isValid()) return@setOnClickListener
 
+            registerButton.isClickable = false
+            registerButton.isEnabled = false
+
             val user = User(
                 firstName = firstNameEditText.text.toString(),
                 lastName = lastNameEditText.text.toString(),
@@ -113,5 +116,7 @@ class RegisterActivity : AppCompatActivity() {
             create()
             show()
         }
+        registerButton.isClickable = true
+        registerButton.isEnabled = true
     }
 }

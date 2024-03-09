@@ -28,6 +28,9 @@ class LoginActivity : AppCompatActivity() {
         loginButton.setOnClickListener {
             if (!isValid()) return@setOnClickListener
 
+            loginButton.isEnabled = false
+            loginButton.isClickable = false
+
             GlobalScope.launch(Dispatchers.Main) {
                 val handler = UsersApi(applicationContext)
                 val (user, err) = handler.getUserByCredentials(
@@ -85,5 +88,7 @@ class LoginActivity : AppCompatActivity() {
         builder.setCancelable(false)
 
         builder.create().show()
+        loginButton.isEnabled = true
+        loginButton.isClickable = true
     }
 }

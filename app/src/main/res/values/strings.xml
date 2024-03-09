@@ -50,4 +50,8 @@
     <string name="update_email">Email</string>
     <string name="update_password">Password</string>
     <string name="update_about">About</string>
+
+    <!--  view user string  -->
+    <string name="view_user_str">View User</string>
+    <string name="articles_by_user">7 Latest articles by This User</string>
 </resources>

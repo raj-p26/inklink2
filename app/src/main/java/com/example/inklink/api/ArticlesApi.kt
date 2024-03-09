@@ -108,4 +108,23 @@ class ArticlesApi(context: Context) {
             requestQueue.add(request)
         }
     }
+
+    suspend fun getLatestArticlesOf(userId: String): Pair<ArrayList<Article>?, JSONObject?> {
+        return suspendCoroutine { continuation ->
+            val request =
+                JsonObjectRequest(Request.Method.GET, "${UsersApi.URL}/users/$userId/latest", null, {
+                    val articles = extractArticles(it)
+                    continuation.resume(Pair(articles, null))
+                }, {
+                    val errObject = if (it.networkResponse != null && it.networkResponse.data != null)
+                        JSONObject(String(it.networkResponse.data))
+                    else
+                        JSONObject().put("message", "Could not connect to the server")
+                    continuation.resume(Pair(null, errObject))
+                })
+
+            requestQueue.add(request)
+        }
+    }
+
 }

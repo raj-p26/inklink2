@@ -44,6 +44,9 @@ class UsersApi(context: Context) {
                 id = obj.getString("id"),
                 userName = obj.getString("username"),
                 email = obj.getString("email"),
+                about = obj.getString("about"),
+                firstName = obj.getString("first_name"),
+                lastName = obj.getString("last_name"),
                 lastLoginDate = obj.getString("last_login_date")
             )
 
@@ -168,3 +171,4 @@ class UsersApi(context: Context) {
         return user
     }
 }
+

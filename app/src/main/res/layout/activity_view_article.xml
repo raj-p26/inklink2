@@ -17,7 +17,12 @@
             app:titleTextColor="#fff"
             android:background="@color/colorPrimary" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:background="@drawable/toolbar_shadow" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
