@@ -1,6 +1,7 @@
 package com.example.inklink
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,7 +11,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.inklink.adapter.ArticlesAdapter
+import com.example.inklink.adapter.MyArticlesAdapter
 import com.example.inklink.api.ArticlesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -38,11 +39,16 @@ class MyArticlesFragment : Fragment() {
                 showDialog(err.getString("message"))
             }
 
-            recyclerView.adapter = ArticlesAdapter(requireActivity(), articles!!)
+            recyclerView.adapter = MyArticlesAdapter(requireActivity(), articles!!)
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
 
         return view
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        requireActivity().recreate()
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun showDialog(message: String) {

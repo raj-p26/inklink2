@@ -1,7 +1,7 @@
 package com.example.inklink
 
+import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -10,10 +10,10 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import com.example.inklink.api.ArticlesApi
-import com.example.inklink.models.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 class CreateArticleActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
@@ -26,6 +26,11 @@ class CreateArticleActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.createArticle_toolbar)
         articleTitle = findViewById(R.id.new_article_title)
         articleContent = findViewById(R.id.new_article_content)
+
+        if (intent.getStringExtra("title") != null)
+            articleTitle.setText(intent.getStringExtra("title"))
+        if (intent.getStringExtra("content") != null)
+            articleContent.setText(intent.getStringExtra("content"))
 
         setSupportActionBar(toolbar)
     }
@@ -40,28 +45,52 @@ class CreateArticleActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.create_article_draft -> createArticle("draft")
-            R.id.create_article_publish -> createArticle("published")
+            R.id.create_article_draft -> {
+                if (articleTitle.text.toString().isBlank()) {
+                    showMessage("Article Title cannot be blank")
+                    return false
+                }
+
+                if (articleContent.text.toString().isBlank()) {
+                    showMessage("Article Content cannot be blank")
+                    return false
+                }
+
+                handleArticle("draft")
+            }
+
+            R.id.create_article_publish -> {
+                if (articleTitle.text.toString().isBlank()) {
+                    showMessage("Article Title cannot be blank")
+                    return false
+                }
+
+                if (articleContent.text.toString().isBlank()) {
+                    showMessage("Article Content cannot be blank")
+                    return false
+                }
+
+                handleArticle("published")
+            }
+
             R.id.create_article_discard -> {
                 if (articleTitle.text.toString().isNotBlank() || articleContent.text.toString().isNotBlank()) {
                     AlertDialog.Builder(this@CreateArticleActivity).apply {
                         setTitle("Discard?")
                         setMessage("Are you sure you want to discard changes?")
                         setPositiveButton("Yes") { _, _ ->
-                            intent = Intent(this@CreateArticleActivity, MainActivity::class.java)
-                            this@CreateArticleActivity.startActivity(intent)
-                            this@CreateArticleActivity.finish()
+                            setResult(Activity.RESULT_OK)
+                            this@CreateArticleActivity.finishActivity(Activity.RESULT_OK)
+                            return@setPositiveButton
                         }
                         setNegativeButton("No", null)
 
                         create()
                         show()
                     }
-                } else {
-                    intent = Intent(this@CreateArticleActivity, MainActivity::class.java)
-                    this@CreateArticleActivity.startActivity(intent)
-                    this@CreateArticleActivity.finish()
                 }
+                setResult(Activity.RESULT_OK)
+                this@CreateArticleActivity.finish()
             }
         }
 
@@ -69,23 +98,44 @@ class CreateArticleActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        intent = Intent(this@CreateArticleActivity, MainActivity::class.java)
-        this@CreateArticleActivity.startActivity(intent)
-        this@CreateArticleActivity.finish()
+        if (articleTitle.text.toString().isNotBlank() || articleContent.text.toString().isNotBlank()) {
+            AlertDialog.Builder(this@CreateArticleActivity).apply {
+                setTitle("Discard?")
+                setMessage("Are you sure you want to discard changes?")
+                setPositiveButton("Yes") { _, _ ->
+                    setResult(Activity.RESULT_OK)
+                    this@CreateArticleActivity.finish()
+                    super.onBackPressed()
+                }
+                setNegativeButton("No", null)
 
-        super.onBackPressed()
+                create()
+                show()
+            }
+        } else {
+            setResult(Activity.RESULT_OK)
+            this@CreateArticleActivity.finish()
+            super.onBackPressed()
+        }
     }
 
-    private fun createArticle(status: String) {
+    private fun handleArticle(status: String) {
         val prefs = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-        val article = Article()
-        article.userId = prefs.getString("userId", null)
-        article.title = articleTitle.text.toString()
-        article.content = articleContent.text.toString()
-        article.status = status
+        val jsonObject = JSONObject().apply {
+            put("title", articleTitle.text.toString())
+            put("content", articleContent.text.toString())
+            put("status", status)
+        }
+
         GlobalScope.launch(Dispatchers.Main) {
             val helper = ArticlesApi(this@CreateArticleActivity)
-            val result = helper.newArticle(article)
+            val result = if (intent.getStringExtra("articleId") != null) {
+                jsonObject.put("id", intent.getStringExtra("articleId"))
+                helper.updateArticleStatus(jsonObject)
+            } else {
+                jsonObject.put("user_id", prefs.getString("userId", null))
+                helper.newArticle(jsonObject)
+            }
 
             showDialogBox(result.getString("status"), result.getString("message"))
         }
@@ -97,10 +147,21 @@ class CreateArticleActivity : AppCompatActivity() {
             setMessage(message)
             setCancelable(false)
             setPositiveButton("Ok") { _, _ ->
-                intent = Intent(this@CreateArticleActivity, MainActivity::class.java)
-                this@CreateArticleActivity.startActivity(intent)
+                setResult(Activity.RESULT_OK)
                 this@CreateArticleActivity.finish()
             }
+
+            create()
+            show()
+        }
+    }
+
+    private fun showMessage(message: String) {
+        AlertDialog.Builder(this@CreateArticleActivity).apply {
+            setTitle("Info")
+            setMessage(message)
+            setCancelable(false)
+            setNeutralButton("Ok", null)
 
             create()
             show()

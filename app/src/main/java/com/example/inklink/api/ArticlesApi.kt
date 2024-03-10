@@ -1,6 +1,7 @@
 package com.example.inklink.api
 
 import android.content.Context
+import android.util.Log
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
@@ -56,22 +57,10 @@ class ArticlesApi(context: Context) {
         return articles
     }
 
-    suspend fun newArticle(article: Article): JSONObject {
-        if (article.userId == null) {
-            return (JSONObject().apply {
-                put("status", "failed")
-                put("message", "How the hell are you able to create an article?")
-            })
-        }
-        val jsonObject = JSONObject()
-        jsonObject.put("title", article.title)
-        jsonObject.put("content", article.content)
-        jsonObject.put("status", article.status)
-        jsonObject.put("user_id", article.userId)
-
+    suspend fun newArticle(obj: JSONObject): JSONObject {
         return suspendCoroutine { continuation ->
             val request =
-                JsonObjectRequest(Request.Method.POST, "$URL/articles/new", jsonObject, {
+                JsonObjectRequest(Request.Method.POST, "$URL/articles/new", obj, {
                     continuation.resume(it)
                 }, {
                     val errObject = if (it.networkResponse != null && it.networkResponse.data != null)
@@ -121,6 +110,42 @@ class ArticlesApi(context: Context) {
                     else
                         JSONObject().put("message", "Could not connect to the server")
                     continuation.resume(Pair(null, errObject))
+                })
+
+            requestQueue.add(request)
+        }
+    }
+
+    suspend fun updateArticleStatus(article: JSONObject): JSONObject {
+        return suspendCoroutine { continuation ->
+            val request =
+                JsonObjectRequest(Request.Method.PUT, "$URL/articles/update_status", article, {
+                    continuation.resume(it)
+                }, {
+                    val errObject = if (it.networkResponse != null && it.networkResponse.data != null)
+                        JSONObject(String(it.networkResponse.data))
+                    else
+                        JSONObject().put("message", "Could not connect to the server")
+                    continuation.resume(errObject)
+                })
+
+            requestQueue.add(request)
+        }
+    }
+
+    suspend fun deleteArticle(id: String, userId: String): JSONObject {
+        return suspendCoroutine { continuation ->
+            val request =
+                JsonObjectRequest(Request.Method.DELETE, "$URL/articles/delete/$id?user_id=$userId", null, {
+                    continuation.resume(it)
+                }, {
+                    Log.d("it-dbg", it.toString())
+                    val errObject = if (it.networkResponse != null && it.networkResponse.data != null) {
+                        Log.d("it-dbg", String(it.networkResponse.data))
+                        JSONObject(String(it.networkResponse.data))
+                    } else
+                        JSONObject().put("message", "Could not connect to the server")
+                    continuation.resume(errObject)
                 })
 
             requestQueue.add(request)

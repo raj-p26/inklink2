@@ -12,12 +12,12 @@ import com.example.inklink.R
 import com.example.inklink.ViewArticleActivity
 import com.example.inklink.models.Article
 
-internal class ArticlesAdapter(private val activity: Activity, private val articles: ArrayList<Article>) :
-    RecyclerView.Adapter<ArticlesAdapter.ViewHolder>() {
+internal class MyArticlesAdapter(private val activity: Activity, private val articles: ArrayList<Article>) :
+    RecyclerView.Adapter<MyArticlesAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val inflater = LayoutInflater.from(activity.applicationContext)
-        val view = inflater.inflate(R.layout.articles_row, parent, false)
+        val inflater = LayoutInflater.from(activity)
+        val view = inflater.inflate(R.layout.my_articles_row, parent, false)
 
         return ViewHolder(view)
     }
@@ -29,18 +29,21 @@ internal class ArticlesAdapter(private val activity: Activity, private val artic
 
     override fun getItemCount(): Int = articles.size
 
-    internal inner class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    internal inner class ViewHolder(private val myView: View) :
+            RecyclerView.ViewHolder(myView) {
         var article = Article()
 
         fun setDetails() {
-            val articleTitle = view.findViewById<TextView>(R.id.articles_row_title)
+            val articleTitle: TextView = myView.findViewById(R.id.my_articles_row_title)
             articleTitle.text =
                 if (article.title!!.length > 30) "${article.title!!.substring(0,30)}..." else article.title
-            val articleContent = view.findViewById<TextView>(R.id.articles_row_content)
+            val articleContent: TextView = myView.findViewById(R.id.my_articles_row_content)
             articleContent.text =
                 if (article.content!!.length > 30) "${article.content!!.substring(0,30)}..." else article.content
+            val articleStatus: TextView = myView.findViewById(R.id.my_articles_row_status)
+            articleStatus.text = article.status
 
-            val cardView = view.findViewById<CardView>(R.id.articles_row_cardView)
+            val cardView: CardView = itemView.findViewById(R.id.my_articles_row_cardView)
             cardView.setOnClickListener {
                 val intent = Intent(activity.applicationContext, ViewArticleActivity::class.java)
                 intent.putExtra("article_id", article.id)
@@ -50,7 +53,7 @@ internal class ArticlesAdapter(private val activity: Activity, private val artic
                 intent.putExtra("article_status", article.status)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
-                activity.startActivityForResult(intent, Activity.RESULT_OK)
+                activity.startActivity(intent)
             }
         }
     }

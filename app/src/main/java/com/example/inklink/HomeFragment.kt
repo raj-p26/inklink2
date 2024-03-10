@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -50,13 +51,19 @@ class HomeFragment : Fragment() {
         }
 
         floatingActionButton.setOnClickListener {
-            val intent = Intent(requireContext(), CreateArticleActivity::class.java)
+            val intent = Intent(requireActivity(), CreateArticleActivity::class.java)
 
-            startActivity(intent)
-            requireActivity().finish()
+            startActivityForResult(intent, 45)
         }
 
         return view
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        requireActivity().recreate()
+        Log.d("recreate-dbg", "$requestCode --- $resultCode")
+        Log.d("recreate-dbg", "Activity <HomeFragment> recreated")
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun showDialog(message: String) {

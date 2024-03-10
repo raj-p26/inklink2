@@ -1,6 +1,8 @@
 package com.example.inklink
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -38,6 +40,13 @@ class ArticlesFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        requireActivity().recreate()
+        Log.d("recreate-dbg", "ArticlesFragment recreated")
+        Log.d("recreate-dbg", "$requestCode --- $resultCode")
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun showDialog(message: String) {
