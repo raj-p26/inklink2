@@ -119,7 +119,7 @@ class ArticlesApi(context: Context) {
     suspend fun updateArticleStatus(article: JSONObject): JSONObject {
         return suspendCoroutine { continuation ->
             val request =
-                JsonObjectRequest(Request.Method.PUT, "$URL/articles/update_status", article, {
+                JsonObjectRequest(Request.Method.PUT, "$URL/articles/update", article, {
                     continuation.resume(it)
                 }, {
                     val errObject = if (it.networkResponse != null && it.networkResponse.data != null)
